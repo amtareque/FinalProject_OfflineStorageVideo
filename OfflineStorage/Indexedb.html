@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="/OfflineStorage/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+    <div id="container">
+        <h1>CRUD Operation(IndexedDb)</h1>
+        <div role="main">
+            <table id="contacts">
+                <thead>
+                    <tr>
+
+                        <th>Phone Number</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <hr />
+
+        </div>
+        <div>
+            <input type="hidden" id="id" name="id" />
+        </div>
+        <div>
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" />
+        </div>
+        <div>
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" />
+        </div>
+
+        <div>
+            <label for="age">Phone Number:</label>
+            <input type="text" id="age" name="age" />
+        </div>
+        <div class="buttons">
+            <button id="btnSave" name="save"
+                    onclick="save()">
+                Add
+            </button>
+            <button id="btnEdit" name="edit"
+                    onclick="save('edit')">
+                Edit
+            </button>
+            <button id="btnDelete" name="Delete"
+                    onclick="deleteContact()">
+                Delete
+            </button>
+        </div>
+    </div>
+
+    <script>
+        //db="";
+        var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+        var open = indexedDB.open('MyDatabase4', 1);
+        open.onupgradeneeded = function (response) {
+            db = open.result;
+            var store = db.createObjectStore("students", { keyPath: "id", autoIncrement: true });
+            var index = store.createIndex("recordsindex", ["name.last", "name.first"]);
+        };
+
+        open.onsuccess = function (response) {
+            db = open.result;
+            getAuthors();
+            // addAuthor();
+
+        };
+
+        //var indexedDB = window.indexedDB;
+        //var openRequest = indexedDB.open('Library', 1);
+        //var db;
+        //openRequest.onsuccess = function (response) {
+        //    db = openRequest.result;
+        //    alert("db");
+        //};
+        //openRequest.onerror = function (response) {
+        //    alert("Error code: " + response.target.errorCode);
+        //};
+
+
+
+
+
+
+
+
+
+
+
+
+        function save() {
+            if ($("#btnSave").html() == "Add")
+                addAuthor();
+                else
+                changeAuthor();
+            }
+
+        function clearForm() {
+            $('#id').val("");
+            $('#firstName').val("");
+            $('#lastName').val("");
+            $('#age').val("");
+            $("#btnSave").html("Add");
+        }
+        function addAuthor() {
+            tx = db.transaction("students", "readwrite");
+            store = tx.objectStore("students");
+            index = store.index("recordsindex");
+            var req = store.put({ name: { first: $("#firstName").val(), last: $("#lastName").val() }, age: $("#age").val() });
+            req.onsuccess = function () {
+                getAuthors();
+                clearForm();
+            };
+            req.onerror = function (response) {
+                alert(response.target.error);
+            }
+        }
+
+        function changeAuthor() {
+            c = $("#id").val();
+            alert(c);
+            tx = db.transaction("students", "readwrite");
+            store = tx.objectStore("students");
+            index = store.index("recordsindex");
+            var r1 = store.delete(Number(c));
+            r1.onsuccess = function () {
+                var req = store.put({ name: { first: $("#firstName").val(), last: $("#lastName").val() }, age: $("#age").val() });
+                req.onsuccess = function () {
+                    getAuthors();
+                    clearForm();
+                };
+                req.onerror = function (response) {
+                    alert(response.target.error);
+                }
+            }
+        }
+
+        function getAuthors() {
+            tx = db.transaction("students", "readonly");
+            store = tx.objectStore("students");
+            index = store.index("recordsindex");
+            var a = store.getAll();
+            a.onsuccess = function () {
+                var html = '';
+                for (var i = 0; i < a.result.length; i++) {
+                    var contact = a.result[i];
+                    html += '<tr><td>' + contact.age + '</td>';
+                    html += '<td>' + contact.name.first + ' ' + contact.name.last + '</td>';
+                    html += '<td><a class="edit" href="#" data-key='
+                        + contact.id + '>Edit</a> | <a class="delete" href="#" data-key='
+                        + contact.id + '>Delete</a></td></tr>';
+                }
+                html = html || '<tr><td colspan="3">No records available</td></tr>';
+                $('#contacts tbody').html(html);
+                $('#contacts a.edit').on('click', loadContact);
+                $('#contacts a.delete').on('click', deleteContact);
+            };
+            a.onerror = function (response) {
+                alert(response.target.error);
+            }
+        }
+        loadContact = function () {
+            tx = db.transaction("students", "readonly");
+            store = tx.objectStore("students");
+            index = store.index("recordsindex");
+            gid = parseInt($(this).attr('data-key'));
+            var a = store.get(gid);
+            a.onsuccess = function () {
+                contact = a.result;
+                $('#id').val(contact.id);
+                $('#firstName').val(contact.name.first);
+                $('#lastName').val(contact.name.last);
+                $('#age').val(contact.age);
+                $("#btnSave").html("Update");
+            };
+        };
+        deleteContact = function () {
+            tx = db.transaction("students", "readwrite");
+            store = tx.objectStore("students");
+            index = store.index("recordsindex");
+            gid = parseInt($(this).attr('data-key'));
+            var a = store.delete(gid);
+            a.onsuccess = function () {
+                getAuthors();
+            };
+        };
+
+
+
+    </script>
+</body>
+</html>

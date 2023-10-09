@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Video Project</title>
+    <style>
+        video {
+            width: 360px;
+            height: 260px;
+        }
+
+            video::cue {
+                white-space: pre;
+            }
+
+            video::cue(.man) {
+                color: yellow
+            }
+        #media, #myCanvas {
+            padding-left: 200px;
+        }
+    </style>
+    <script src="jquery-1.12.4.min.js"></script>
+    <script src="JavaScript.js"></script>
+</head>
+<body>
+    <div id="container">
+        <video id="media" controls="controls">
+            <source src="movie.mp4" type="video/mp4">
+            <track label="English subtitles" kind="subtitles" srclang="en" src="/VideoProject/Track1.vtt" default>
+        </video>
+        <hr />
+        <button type="button" id="play">Play</button>
+        <hr />
+        <button id="btnSnapshot" type="button">Snapshot</button>
+        <hr />
+        <canvas id="myCanvas" width="360" height="240">
+            Canvas is used for drawing by javascript.
+            You need a browser that supports HTML5 canvas!
+        </canvas>
+
+        <hr />
+        Sorce will be shown here<br />
+        <span id='message'></span>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#play').on('click', playStop);
+            $('#media').on('play', function () {
+                $('#play').html('Pause');
+            });
+            $('#media').on('pause', function () {
+                $('#play').html('Play');
+            });
+        });
+        function playStop() {
+            var media = $('#media')[0];
+            if (media.paused) {
+                media.play();
+            }
+            else {
+                media.pause();
+            }
+        }
+    </script>
+
+
+</body>
+</html>

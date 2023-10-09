@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="/OfflineStorage/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+    <div id="container">
+        <div>
+            <label for="content">Contents</label>
+            <textarea id="content" rows="4" cols="20"></textarea>
+        </div>
+        <div>
+            <input id="write" type="button" value="Write File" />
+            <input id="read" type="button" value="Read File" />
+            <input id="remove" type="button" value="Remove File" />
+        </div>
+        <div id="op"></div>
+    </div>
+    <script>
+        window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
+
+        //write file
+        function writeFile() {
+            window.requestFileSystem(TEMPORARY, 5 * 1024 * 1024, getFile, handleError);
+        }
+        function getFile(fileSystem) {
+            fileSystem.root.getFile("example.txt", { create: true }, fileOpened, handleError);
+          
+        }
+        function fileOpened(fileEntry) {
+            fileEntry.createWriter(writeToFile, handleError);
+        }
+        function handleError(error) {
+            alert(error.code+":"+error.message);
+        }
+        function writeToFile(fileWriter) {
+            fileWriter.onwriteend = function () { alert('Success'); };
+            fileWriter.onerror = function () { alert('Failed'); };
+            fileWriter.seek(fileWriter.length);
+            fileWriter.write(new Blob([$("#content").val()+"\n"], { type: 'text/plain' }));//Binary Large Object
+            }
+
+        //file read
+        function readFile() {
+            window.requestFileSystem(TEMPORARY, 5 * 1024 * 1024, getFile2, handleError);
+        }
+        function getFile2(fileSystem) {
+            fileSystem.root.getFile("example.txt", { create: true }, fileRead, handleError);
+            
+        }
+        function fileRead(fileEntry) {
+            fileEntry.file(readFile2, handleError);
+        }
+        function readFile2(file) {
+            $("#op").html("");
+            var fr = new FileReader();
+            fr.onloadend = function () {
+                var lines = this.result.split("\n");
+                $("#op").append("<hr/>");
+                $.each(lines, function (k, v) {
+                    $("#op").append(`<div>${v}</div>`);
+                });
+            };
+            fr.onerror = function () { alert("Failed") };
+            fr.readAsText(file);
+
+
+        }
+
+        //remove function
+        function removeFile() {
+            window.requestFileSystem(TEMPORARY, 5 * 1024 * 1024, getFile3, handleError);
+        }
+        function getFile3(fileSystem) {
+            fileSystem.root.getFile("example.txt", { create: true }, fileRemove, handleError);
+            
+        }
+        function fileRemove(fileEntry) {
+            fileEntry.remove(removeFile2, handleError);
+        }
+        function removeFile2() {
+            alert("Successfully removed");
+            readFile();
+        }
+
+        //every work is divided by five functions
+        //1. requestfilesystem
+        //2. getfile(successcallback of requestfilesystem)
+        //3. read/write/remove(successcallback of getfile)
+        //4. successcallback of 3rd
+        //5. errorcallback of all(same)
+
+        $(document).ready(function () {
+            $("#write").on('click', writeFile);
+            $("#read").on('click', readFile);
+            $("#remove").on('click', removeFile);
+
+        });
+    </script>
+</body>
+</html>

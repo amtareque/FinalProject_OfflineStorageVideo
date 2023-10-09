@@ -1,0 +1,211 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <script src="/OfflineStorage/jquery-1.12.4.min.js"></script>
+    <title></title>
+    <style>
+        table, td, th {
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        #container {
+            width: 500px;
+            border: 1px solid red;
+            margin: auto;
+            padding: 10px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            margin: auto;
+        }
+
+        label {
+            width: 120px;
+            display: inline-block;
+        }
+        #target {
+            border: solid;
+            height: 150px;
+            width: 500px;
+            background-color: yellow;
+            text-align: center;
+        }
+
+        td {
+            min-width: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div role="main">
+            <h1>CRUD Operation(localStorage)</h1>
+            <table id="contacts">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <!-- <th>Logo</th> -->
+                        <th>Image</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" />
+        </div>
+        <div>
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" />
+        </div>
+        <div>
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" />
+        </div>
+        <div>
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" />
+        </div>
+        <label for="classhere">Picture:</label>
+        <div style="min-width:30px;min-height:50px">
+            <input class="classhere" type="file" name="logo" id="logo" />
+        </div>
+        <hr />
+        <div id="target">
+            <p>Drag and drop files here...</p>
+        </div>
+        <div id="imgshow"></div>
+        <hr />
+
+        <div class="buttons">
+            <button id="btnSave" name="save" onclick="save()">Save</button>
+            <button id="btnEdit" name="edit" onclick="save('edit')">Edit</button>
+            <button id="btnDelete" name="Delete" onclick="deleteContact()">Delete</button>
+        </div>
+
+        <hr />
+        <div class="imagearea"></div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            var key;
+            var img;
+         img = "";
+            jQuery.event.props.push('dataTransfer');
+            $('#target').on('dragenter', preventDefault);
+            $('#target').on('dragover', preventDefault);
+            $('#target').on('drop', dropItem);
+
+
+
+            function retrieveFromStorage() {
+                a = localStorage.getItem('contacts');
+                return a ? JSON.parse(a) : [];
+            }
+            display = function () {
+                results = retrieveFromStorage();
+                bindToGrid(results);
+            };
+            display();
+            function bindToGrid(r) {
+                var html = '';
+
+                for (var i = 0; i < r.length; i++) {
+                    var contact = r[i];
+
+                    var img = new Image();
+                    img.src = contact.logo;
+                    //alert(img.src);
+                    html += `<tr id="edit" onclick="loadContact('${i}')"><td>${contact.email}</td><td>${contact.firstName} ${contact.lastName}</td><td>${contact.logo}</td></tr>`;//<td>${contact.logo}</td>
+                }
+                $('#contacts tbody').html(html);
+            };
+            save = function (mode = "") {
+                var contact = {};
+                contact.firstName = $('#firstName').val();
+                contact.lastName = $('#lastName').val();
+                contact.email = $('#email').val();
+                contact.phoneNumber = $('#phoneNumber').val();
+                contact.logo = $("#imgshow").html();
+                results = retrieveFromStorage();
+                    if (mode == "edit") results[key] = contact;
+                    else results.push(contact);
+                    localStorage.setItem('contacts', JSON.stringify(results));
+                display();
+                $("#imgshow").html("");
+              };
+
+
+            function preventDefault(e) {
+                e.preventDefault();
+            }
+            function dropItem(e) {
+                e.preventDefault();
+                var files = e.dataTransfer.files
+                a = "";
+                i = 0;
+
+                for (i = 0; i < files.length; i++) {
+
+                    (function (file) {
+                        var name = file.name;
+                        var reader = new FileReader();
+                        reader.onload = function (e1) {
+                            // get file content
+                            var text = e1.target.result;
+                            img += `<img  width="100px" height="100px" src="${text}"/>`
+                            $("#imgshow").append(`<img width="100px" height="100px" src="${text}"/>`);
+                        }
+                        reader.readAsDataURL(file, "UTF-8");
+                    })(files[i]);
+                }
+
+                preventDefault(e);
+            }
+            $(".classhere").change(function () {
+                var fileInput = $(".classhere")[0];
+                var file = fileInput.files[0];
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    text = reader.result;
+                    $("#imgshow").append(`<img  width="100px" height="100px" src="${text}"/>`);
+                   }
+                reader.readAsDataURL(file);
+            });
+
+            loadContact = function (a) {
+                key = a;
+                var results = retrieveFromStorage();
+                var contact = results[a];
+                $('#firstName').val(contact.firstName);
+                $('#lastName').val(contact.lastName);
+                $('#email').val(contact.email);
+                $('#phoneNumber').val(contact.phoneNumber);
+                alert(contact.logo);
+                $('#imgshow').html(contact.logo);
+            };
+            deleteContact = function () {
+                results = retrieveFromStorage();
+                results.splice(key, 1);
+                localStorage.clear();
+                localStorage.setItem('contacts', JSON.stringify(results));
+                bindToGrid(results);
+            }
+        });
+    </script>
+</body>
+</html>
+

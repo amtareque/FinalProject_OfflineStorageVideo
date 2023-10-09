@@ -1,0 +1,105 @@
+﻿p {
+    margin: 0px;
+}
+
+#div3 {
+    margin-top: 40px;
+    background-color: white;
+    box-sizing: border-box;
+    float: left;
+    width: 25%;
+    height: 460px;
+}
+
+div[role="main"] {
+    background-color: white;
+    box-sizing: border-box;
+    float: left;
+    width: 50%;
+    padding: 5px;
+}
+
+#myIframe {
+    border: 0px;
+    width: 100%;
+    min-height: 500px;
+}
+
+
+
+#div5 {
+    background-color: white;
+    box-sizing: border-box;
+    float: left;
+    width: 25%;
+}
+
+img {
+    display: block;
+    float: left;
+}
+
+nav ul li {
+    list-style: none;
+    margin-left: -20px;
+    display: inline-block;
+    width: 200px;
+}
+
+/*    nav ul li a {
+        text-decoration: none;
+        color: orange;
+        font-size: large;
+    }*/
+/*
+nav ul {
+    justify-content: center;
+    display: flex;
+}*/
+
+#div3 ul li {
+    list-style: none;
+    margin: 5px;
+    display: block;
+    width: 80%;
+    border: 1px solid blue;
+    background-color: white;
+    justify-content: center;
+    display: flex;
+}
+
+    /*    #div3 ul li a {
+        text-decoration: none;
+        color: maroon;
+        font-size: large;
+    }*/
+
+    #div3 ul li:hover {
+        background-color: white;
+        cursor: pointer;
+    }
+
+#ads {
+    background-color: lightcyan;
+    color: black;
+    border: 1px solid white;
+    margin: 0px;
+    text-align: center;
+    width: 90%;
+}
+
+aside img {
+    width: 90%;
+    height: 200px;
+    border: 1px solid black;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 10px;
+}
+
+/*#div6 p {
+    font-family: 'Open Sans', 'PF DinText Pro', Arial, Helvetica, sans-serif;
+    line-height: 1.71428571;
+    font-size: 14px;
+}*/
+

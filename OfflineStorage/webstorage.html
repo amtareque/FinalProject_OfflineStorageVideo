@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="/OfflineStorage/jquery-1.12.4.min.js"></script>
+    <script src="/OfflineStorage/wsql.js"></script>
+    <style>
+        #target {
+            border: solid;
+            height: 150px;
+            width: 500px;
+            background-color: yellow;
+            text-align: center;
+        }
+
+        td {
+            min-width: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div role="main">
+            <table id="contacts">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>logo</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="editContact">
+                <h2 id="currentAction">Actions</h2>
+                <div>
+                    <label for="id">ID</label>
+                    <input type="text" id="id" name="id" />
+                </div>
+                <div>
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" />
+                </div>
+                <div>
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" />
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" />
+                </div>
+                <div>
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="text" id="phoneNumber" name="phoneNumber" />
+                </div>
+                <label for="classhere">Picture:</label>
+                <div style="min-width:30px;min-height:50px">
+                    <input class="classhere" type="file" name="logo" id="logo" />
+                </div>
+                <hr />
+                <div id="target">
+                    <p>Drag and drop files here...</p>
+                </div>
+                <div id="imgshow"></div>
+                <hr />
+            </div>
+            <div class="buttons"><button id="btnSave" name="save">Save</button></div>
+
+        </div>
+        <hr />
+        <div class="imagearea"></div>
+    </div>
+</body>
+</html>
